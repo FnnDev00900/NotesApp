@@ -1,0 +1,83 @@
+package ir.fnndev.notesapp.ui.screen.note_add_edit
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import ir.fnndev.notesapp.ui.theme.smallDp
+import androidx.compose.runtime.collectAsState
+
+@Composable
+fun NoteAddOrEditScreen(viewModel: NoteAddOrEditViewModel = hiltViewModel()) {
+
+    val title = viewModel.titleState.collectAsState()
+    val content = viewModel.contentState.collectAsState()
+
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(smallDp),
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Add New")
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = innerPadding.calculateTopPadding() + smallDp,
+                    bottom = innerPadding.calculateBottomPadding() + smallDp
+                ),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = title.value,
+                onValueChange = { viewModel.updateTitleState(it) },
+                label = { Text(text = "Title") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                singleLine = true,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(smallDp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxSize(),
+                value = content.value,
+                onValueChange = { viewModel.updateContentState(it) },
+                label = { Text(text = "Content") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.None
+                ),
+                singleLine = false,
+            )
+        }
+    }
+}
