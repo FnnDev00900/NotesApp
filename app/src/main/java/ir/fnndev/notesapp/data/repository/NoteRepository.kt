@@ -7,6 +7,7 @@ interface NoteRepository {
     suspend fun upsertNote(note: Note)
     suspend fun deleteNote(note: Note)
 
+    fun getNoteById(noteId: Int): Flow<Note?>
     fun getNotes(): Flow<List<Note>>
 
     fun getFilteredNotes(searchText: String): Flow<List<Note>>

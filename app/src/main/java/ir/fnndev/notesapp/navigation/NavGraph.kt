@@ -17,7 +17,7 @@ fun SetupNavGraph(navController: NavHostController) {
             NoteListScreen(navController)
         }
         composable(
-            route = Screens.NoteAddOrEditScreen.route, arguments = listOf(
+            route = Screens.NoteAddOrEditScreen.route + "/{noteId}", arguments = listOf(
                 navArgument("noteId") {
                     type = NavType.IntType
                     defaultValue = -1

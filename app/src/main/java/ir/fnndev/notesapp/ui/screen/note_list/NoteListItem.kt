@@ -14,8 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import ir.fnndev.notesapp.data.entity.Note
+import ir.fnndev.notesapp.ui.theme.mediumSp
 import ir.fnndev.notesapp.ui.theme.smallDp
+import ir.fnndev.notesapp.ui.theme.smallSp
 
 @Composable
 fun NoteListItem(note: Note, onEvent: (NoteListEvents) -> Unit) {
@@ -24,7 +27,7 @@ fun NoteListItem(note: Note, onEvent: (NoteListEvents) -> Unit) {
             .fillMaxWidth()
             .padding(smallDp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         Row(
             modifier = Modifier
@@ -33,7 +36,7 @@ fun NoteListItem(note: Note, onEvent: (NoteListEvents) -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = note.noteTitle)
+            Text(text = note.noteTitle, fontSize = mediumSp)
             Row {
                 IconButton(onClick = {
                     onEvent(NoteListEvents.OnEditNote(note = note))
@@ -47,5 +50,6 @@ fun NoteListItem(note: Note, onEvent: (NoteListEvents) -> Unit) {
                 }
             }
         }
+        Text(text = note.noteContent, fontSize = smallSp, overflow = TextOverflow.Ellipsis, maxLines = 2)
     }
 }

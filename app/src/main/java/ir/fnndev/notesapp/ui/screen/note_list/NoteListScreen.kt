@@ -10,12 +10,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import ir.fnndev.notesapp.ui.theme.smallDp
 import ir.fnndev.notesapp.utils.Screens
+import ir.fnndev.notesapp.utils.UiEvents
 
 @Composable
 fun NoteListScreen(
@@ -24,6 +26,17 @@ fun NoteListScreen(
 ) {
     val listNotes = viewModel.notesList.collectAsState(initial = emptyList())
 
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvents.collect {event->
+            when(event){
+                is UiEvents.NavigateTo -> {
+                    navController.navigate(event.route)
+                }
+                else -> Unit
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +44,7 @@ fun NoteListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screens.NoteAddOrEditScreen.route)
+                    navController.navigate(Screens.NoteAddOrEditScreen.withArgs("-1"))
                 }
             ) {
                 Icon(imageVector = Icons.Default.Add, "Add New")
@@ -47,9 +60,9 @@ fun NoteListScreen(
                 )
         ) {
             items(listNotes.value) { note ->
-                NoteListItem(note, onEvent = {
-                    viewModel::onEvents
-                })
+                NoteListItem(note,
+                    onEvent = viewModel::onEvents
+                )
             }
         }
     }

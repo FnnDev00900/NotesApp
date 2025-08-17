@@ -14,6 +14,10 @@ class NoteRepositoryImpl @Inject constructor(private val dao: NoteDao) : NoteRep
         dao.deleteNote(note)
     }
 
+    override fun getNoteById(noteId: Int): Flow<Note?> {
+        return dao.getNoteById(noteId)
+    }
+
     override fun getNotes(): Flow<List<Note>> {
         return dao.getNotes()
     }

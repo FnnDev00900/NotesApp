@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -27,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.fnndev.notesapp.ui.theme.smallDp
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
+import ir.fnndev.notesapp.utils.UiEvents
 
 @Composable
 fun NoteAddOrEditScreen(
@@ -38,6 +40,17 @@ fun NoteAddOrEditScreen(
     val title = viewModel.titleState.collectAsState()
     val content = viewModel.contentState.collectAsState()
 
+    LaunchedEffect(key1 = noteId) { viewModel.updateNoteId(noteId)}
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvents.collect { event ->
+            when (event) {
+                is UiEvents.PopBack -> {
+                    navController.popBackStack()
+                }
+                else -> Unit
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -45,7 +58,7 @@ fun NoteAddOrEditScreen(
             .padding(smallDp),
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.popBackStack()
+                viewModel.onEvents(NoteAddOrEditEvents.OnSaveNote)
             }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "Add New")
             }
@@ -64,7 +77,7 @@ fun NoteAddOrEditScreen(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = title.value,
-                onValueChange = { viewModel.updateTitleState(it) },
+                onValueChange = { viewModel.onEvents(NoteAddOrEditEvents.OnTitleChange(it)) },
                 label = { Text(text = "Title") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -77,7 +90,7 @@ fun NoteAddOrEditScreen(
             OutlinedTextField(
                 modifier = Modifier.fillMaxSize(),
                 value = content.value,
-                onValueChange = { viewModel.updateContentState(it) },
+                onValueChange = { viewModel.onEvents(NoteAddOrEditEvents.OnContentChange(it)) },
                 label = { Text(text = "Content") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,

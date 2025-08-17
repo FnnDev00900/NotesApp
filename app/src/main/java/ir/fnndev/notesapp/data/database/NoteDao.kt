@@ -15,6 +15,9 @@ interface NoteDao {
     @Delete
     suspend fun deleteNote(note: Note)
 
+    @Query("SELECT * FROM NoteTable WHERE noteId = :noteId")
+    fun getNoteById(noteId:Int): Flow<Note?>
+
     @Query("SELECT * FROM NoteTable")
     fun getNotes(): Flow<List<Note>>
 
