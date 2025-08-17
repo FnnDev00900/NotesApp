@@ -26,9 +26,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.fnndev.notesapp.ui.theme.smallDp
 import androidx.compose.runtime.collectAsState
+import androidx.navigation.NavController
 
 @Composable
-fun NoteAddOrEditScreen(viewModel: NoteAddOrEditViewModel = hiltViewModel()) {
+fun NoteAddOrEditScreen(
+    noteId: Int,
+    navController: NavController,
+    viewModel: NoteAddOrEditViewModel = hiltViewModel()
+) {
 
     val title = viewModel.titleState.collectAsState()
     val content = viewModel.contentState.collectAsState()
@@ -39,7 +44,9 @@ fun NoteAddOrEditScreen(viewModel: NoteAddOrEditViewModel = hiltViewModel()) {
             .fillMaxSize()
             .padding(smallDp),
         floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = {
+                navController.popBackStack()
+            }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "Add New")
             }
         }
