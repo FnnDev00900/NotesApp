@@ -1,6 +1,7 @@
 package ir.fnndev.notesapp.ui.screen.note_list
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +26,16 @@ fun NoteListScreen(
     navController: NavController,
     viewModel: NoteListViewModel = hiltViewModel()
 ) {
-    val listNotes = viewModel.notesList.collectAsState(initial = emptyList())
+    val listNotes = viewModel.filterList.collectAsState()
+    val searchedText = viewModel.searchText.collectAsState()
 
     LaunchedEffect(key1 = true) {
-        viewModel.uiEvents.collect {event->
-            when(event){
+        viewModel.uiEvents.collect { event ->
+            when (event) {
                 is UiEvents.NavigateTo -> {
                     navController.navigate(event.route)
                 }
+
                 else -> Unit
             }
         }
@@ -51,6 +55,7 @@ fun NoteListScreen(
             }
         }
     ) { innerPadding ->
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -59,8 +64,18 @@ fun NoteListScreen(
                     bottom = innerPadding.calculateBottomPadding() + smallDp
                 )
         ) {
+            item {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = searchedText.value,
+                    onValueChange = {
+                        viewModel.onEvents(NoteListEvents.OnSearchTextChange(it))
+                    }
+                )
+            }
             items(listNotes.value) { note ->
-                NoteListItem(note,
+                NoteListItem(
+                    note,
                     onEvent = viewModel::onEvents
                 )
             }

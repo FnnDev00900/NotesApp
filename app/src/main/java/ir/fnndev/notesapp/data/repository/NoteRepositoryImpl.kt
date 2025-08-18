@@ -23,6 +23,6 @@ class NoteRepositoryImpl @Inject constructor(private val dao: NoteDao) : NoteRep
     }
 
     override fun getFilteredNotes(searchText: String): Flow<List<Note>> {
-        return dao.getFilteredNotes(searchText)
+        return dao.getFilteredNotes("%$searchText%")
     }
 }
