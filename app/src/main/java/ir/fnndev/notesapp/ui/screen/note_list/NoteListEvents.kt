@@ -6,4 +6,5 @@ sealed class NoteListEvents {
     data class OnDeleteNote(val note: Note) : NoteListEvents()
     data class OnEditNote(val note: Note) : NoteListEvents()
     data class OnSearchTextChange(val searchText: String) : NoteListEvents()
+    data object OnUndoDelete: NoteListEvents()
 }

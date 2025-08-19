@@ -34,6 +34,8 @@ class NoteListViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<UiEvents>()
     val uiEvents = _uiEvents.asSharedFlow()
 
+    private var deletedNote: Note? = null
+
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val filterList: StateFlow<List<Note>> =
         searchText
@@ -56,10 +58,16 @@ class NoteListViewModel @Inject constructor(
         when (events) {
             is NoteListEvents.OnDeleteNote -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    deletedNote = events.note
                     repository.deleteNote(events.note)
+                    _uiEvents.emit(
+                        ShowSnackBar(
+                            message = "${events.note.noteTitle} Deleted!",
+                            actionLabel = "Undo"
+                        )
+                    )
                 }
             }
-
             is NoteListEvents.OnEditNote -> {
                 viewModelScope.launch(Dispatchers.Main) {
                     _uiEvents.emit(
@@ -70,6 +78,15 @@ class NoteListViewModel @Inject constructor(
 
             is NoteListEvents.OnSearchTextChange -> {
                 _searchText.value = events.searchText
+            }
+
+            NoteListEvents.OnUndoDelete -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deletedNote?.let {
+                        repository.upsertNote(it)
+                        deletedNote = null
+                    }
+                }
             }
         }
     }
