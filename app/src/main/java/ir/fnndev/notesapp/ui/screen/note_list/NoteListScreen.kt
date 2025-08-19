@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -21,8 +22,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import ir.fnndev.notesapp.ui.theme.cornerDp
 import ir.fnndev.notesapp.ui.theme.smallDp
 import ir.fnndev.notesapp.utils.Screens
 import ir.fnndev.notesapp.utils.UiEvents
@@ -93,10 +96,9 @@ fun NoteListScreen(
                 )
         ) {
             item {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = searchedText.value,
-                    onValueChange = {
+                SearchBar(
+                    searchText = searchedText.value,
+                    onChangeValue = {
                         viewModel.onEvents(NoteListEvents.OnSearchTextChange(it))
                     }
                 )
@@ -109,4 +111,13 @@ fun NoteListScreen(
             }
         }
     }
+}
+
+@Composable
+fun SearchBar(searchText: String, onChangeValue: (String) -> Unit,modifier: Modifier= Modifier) {
+    OutlinedTextField(
+        modifier = modifier,
+        value = searchText,
+        onValueChange = onChangeValue
+    )
 }
