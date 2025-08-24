@@ -25,6 +25,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -140,38 +141,28 @@ fun SearchBar(searchText: String, onChangeValue: (String) -> Unit) {
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .clip(RoundedCornerShape(cornerDp))
-                .border(
-                    width = smallestDp,
-                    color = Color.Black,
-                    shape = RoundedCornerShape(cornerDp)
-                ),
+                .fillMaxWidth(0.95f),
             value = searchText,
             onValueChange = onChangeValue,
+            label = {Text(text = "Search...")},
             singleLine = true,
             trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search, contentDescription = "Search"
-                )
-            }, leadingIcon = {
                 IconButton(onClick = {
-                    if (searchText.isEmpty()) {
-                        focusManager.clearFocus()
-                    } else {
+                    if (searchText.isNotEmpty()) {
                         onChangeValue("")
+                        focusManager.clearFocus()
                     }
                 }) {
-                    if (searchText.isEmpty()) {
+                    if (searchText.isNotEmpty()) {
                         Icon(
                             imageVector = Icons.Default.Close, "Close"
                         )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack, "Back"
-                        )
                     }
                 }
+            }, leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search, contentDescription = "Search"
+                )
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
