@@ -34,7 +34,7 @@ fun NoteListItem(note: Note, onEvent: (NoteListEvents) -> Unit) {
                 horizontal = mediumDp
             ),
         elevation = CardDefaults.cardElevation(mediumDp),
-        colors = CardDefaults.cardColors(Color.White)
+        colors = CardDefaults.cardColors(Color(note.noteColor))
     ) {
         Column(
             modifier = Modifier

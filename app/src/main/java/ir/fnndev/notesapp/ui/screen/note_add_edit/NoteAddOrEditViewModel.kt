@@ -1,5 +1,7 @@
 package ir.fnndev.notesapp.ui.screen.note_add_edit
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +33,9 @@ class NoteAddOrEditViewModel @Inject constructor(private val repository: NoteRep
     private val _contentState = MutableStateFlow("")
     val contentState = _contentState.asStateFlow()
 
+    private val _noteColor = MutableStateFlow(Color.White)
+    val noteColor = _noteColor.asStateFlow()
+
     fun onEvents(events: NoteAddOrEditEvents) {
         when (events) {
             is NoteAddOrEditEvents.OnContentChange -> _contentState.value = events.content
@@ -40,7 +45,8 @@ class NoteAddOrEditViewModel @Inject constructor(private val repository: NoteRep
                         val newNote = Note(
                             noteId = 0,
                             noteTitle = _titleState.value,
-                            noteContent = _contentState.value
+                            noteContent = _contentState.value,
+                            noteColor = _noteColor.value.toArgb()
                         )
                         repository.upsertNote(newNote)
                         _uiEvents.emit(UiEvents.PopBack)
@@ -50,7 +56,8 @@ class NoteAddOrEditViewModel @Inject constructor(private val repository: NoteRep
                         val updateNote = Note(
                             noteId = _noteId.value,
                             noteTitle = _titleState.value,
-                            noteContent = _contentState.value
+                            noteContent = _contentState.value,
+                            noteColor = _noteColor.value.toArgb()
                         )
                         repository.upsertNote(updateNote)
                         _uiEvents.emit(UiEvents.PopBack)
@@ -60,6 +67,9 @@ class NoteAddOrEditViewModel @Inject constructor(private val repository: NoteRep
             }
 
             is NoteAddOrEditEvents.OnTitleChange -> _titleState.value = events.title
+            is NoteAddOrEditEvents.OnNoteColorChange -> {
+                _noteColor.value = events.color
+            }
         }
     }
 
@@ -69,13 +79,14 @@ class NoteAddOrEditViewModel @Inject constructor(private val repository: NoteRep
     }
 
     fun getNoteById(noteId: Int) {
-        if (noteId != -1){
+        if (noteId != -1) {
             viewModelScope.launch(Dispatchers.IO) {
                 repository.getNoteById(noteId).collect {
                     it?.let {
                         note = it
                         _titleState.value = it.noteTitle
                         _contentState.value = it.noteContent
+                        _noteColor.value = Color(it.noteColor)
                     }
                 }
             }
